@@ -1,9 +1,9 @@
 var tasks = {};
 
-var auditTask = function(taskEl) {
+var auditTask = function (taskEl) {
    // get date from task element
    var date = $(taskEl).find("span").text().trim();
- 
+
    // convert to moment object at 5:00pm
    var time = moment(date, "L").set("hour", 17);
 
@@ -13,14 +13,12 @@ var auditTask = function(taskEl) {
    // apply new class if task is near/over due date
    if (moment().isAfter(time)) {
       $(taskEl).addClass("list-group-item-danger");
-   }
-   else if (Math.abs(moment().diff(time, "days")) <= 2) {
+   } else if (Math.abs(moment().diff(time, "days")) <= 2) {
       $(taskEl).addClass("list-group-item-warning");
    }
    // this should print out an object for the value of the date variable, but at 5:00pm of that date
    console.log(time);
- 
- };
+};
 
 var createTask = function (taskText, taskDate, taskList) {
    // create elements that make up a task item
@@ -148,10 +146,10 @@ $(".list-group").on("click", "span", function () {
    // enable jquery ui datepicker
    dateInput.datepicker({
       minDate: 1,
-      onClose: function() {
+      onClose: function () {
          // when calendar is closed, force a "change" event on dateInput
          $(this.trigger("change"));
-      }
+      },
    });
 
    // automatically bring up the calendar
@@ -195,16 +193,16 @@ $(".card .list-group").sortable({
    tolerance: "pointer",
    helper: "clone",
    activate: function (event) {
-      console.log("activate", this);
+      $(this).addClass("dropover");
    },
    deactivate: function (event) {
-      console.log("deactivate", this);
+      $(this).removeClass("dropover");
    },
    over: function (event) {
-      console.log("over", event.target);
+      $(event.target).addClass("dropover-active");
    },
    out: function (event) {
-      console.log("out", event.target);
+      $(event.target).removeClass("dropover-active");
    },
    update: function (event) {
       // array to store the task data in
@@ -251,8 +249,14 @@ $("#trash").droppable({
 });
 
 $("#modalDueDate").datepicker({
-   minDate: 1
+   minDate: 1,
 });
 
 // load tasks for the first time
 loadTasks();
+
+setInterval(function () {
+   $(".card .list-group-item").each(function(index, el) {
+      auditTask(el);
+   });
+}, 1800000);
